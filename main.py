@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -33,7 +33,7 @@ with app.app_context():
 
 @app.route("/")
 def root():
-    return "Home"
+    return render_template('index.html')
 
 @app.route("/tareas", methods=['GET'])
 def get_tareas():
