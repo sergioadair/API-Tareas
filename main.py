@@ -36,10 +36,22 @@ def root():
     return render_template('index.html')
 
 @app.route("/tareas", methods=['GET'])
-def get_tareas():
+def leer_tareas():
     tareas = Tareas.query.all()
     lista_tareas = [tarea.serialize() for tarea in tareas]
-    return jsonify(lista_tareas), 200
+    return jsonify(lista_tareas), 200, {'Content-Type': 'application/json; charset=utf-8'}
+
+@app.route('/tareas', methods=['POST'])
+def crear_tarea():
+    datos = request.form
+    nueva_tarea = Tareas(
+        titulo = datos.get('titulo'),
+        descripcion = datos.get('descripcion'),
+        estado = datos.get('estado') == 'true'
+    )
+    db.session.add(nueva_tarea)
+    db.session.commit()
+    return jsonify(nueva_tarea.serialize()), 201
 
 
 
