@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -33,26 +33,50 @@ with app.app_context():
 
 @app.route("/")
 def root():
-    return render_template('index.html')
+    return """<pre>
+/tareas     para leer todas las tareas o crear una nueva.
+/tareas/ID  para leer, actualizar o eliminar una tarea por su ID
+</pre>"""
 
 @app.route("/tareas", methods=['GET'])
 def leer_tareas():
     tareas = Tareas.query.all()
     lista_tareas = [tarea.serialize() for tarea in tareas]
-    return jsonify(lista_tareas), 200, {'Content-Type': 'application/json; charset=utf-8'}
+    return jsonify(lista_tareas), 200
 
 @app.route('/tareas', methods=['POST'])
 def crear_tarea():
-    datos = request.form
+    datos = request.json
     nueva_tarea = Tareas(
         titulo = datos.get('titulo'),
         descripcion = datos.get('descripcion'),
-        estado = datos.get('estado') == 'true'
+        estado = datos.get('estado', False)
     )
     db.session.add(nueva_tarea)
     db.session.commit()
     return jsonify(nueva_tarea.serialize()), 201
 
+@app.route('/tareas/<id>', methods=['GET'])
+def leer_tarea(id):
+    tarea = Tareas.query.get_or_404(id)
+    return jsonify(tarea.serialize()), 200
+
+@app.route('/tareas/<id>', methods=['PUT'])
+def actualizar_tarea(id):
+    tarea = Tareas.query.get_or_404(id)
+    datos = request.json
+    tarea.titulo = datos.get('titulo', tarea.titulo)
+    tarea.descripcion = datos.get('descripcion', tarea.descripcion)
+    tarea.estado = datos.get('estado', tarea.estado)
+    db.session.commit()
+    return jsonify(tarea.serialize()), 200
+
+@app.route('/tareas/<id>', methods=['DELETE'])
+def eliminar_tarea(id):
+    tarea = Tareas.query.get_or_404(id)
+    db.session.delete(tarea)
+    db.session.commit()
+    return jsonify({'mensaje': 'Tarea eliminada exitosamente'}), 200
 
 
 if __name__ == "__main__":
