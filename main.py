@@ -34,8 +34,11 @@ with app.app_context():
 @app.route("/")
 def root():
     return """<pre>
-/tareas     para leer todas las tareas o crear una nueva.
-/tareas/ID  para leer, actualizar o eliminar una tarea por su ID
+GET     /tareas     leer todas las tareas existentes.
+POST    /tareas     crear una nueva tarea.
+GET     /tareas/ID  leer una tarea por su ID.
+PUT     /tareas/ID  actualizar una tarea por su ID.
+DELETE  /tareas/ID  eliminar una tarea por su ID.
 </pre>"""
 
 @app.route("/tareas", methods=['GET'])
