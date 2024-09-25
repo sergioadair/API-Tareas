@@ -15,10 +15,7 @@ class Tareas(db.Model):
     estado = db.Column(db.Boolean, default=False)
     fecha_creacion = db.Column(db.DateTime, default=datetime.now)
 
-    def __repr__(self) -> str:
-        return self.titulo
-
-    def serialize(self) -> dict:
+    def serialize(self):
         return {
             "id": self.id,
             "titulo": self.titulo,
